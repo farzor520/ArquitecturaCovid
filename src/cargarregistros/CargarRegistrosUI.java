@@ -1,7 +1,10 @@
 package cargarregistros;
 
+import cargarsintomas.CargarSintomasUI;
 import manejoarchivos.ManejoArchivos;
+import cargarsintomas.CargarSintomas;
 import monitor.Monitor;
+import monitor.Sintomas;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -21,11 +24,12 @@ public class CargarRegistrosUI extends JFrame{
     static JLabel titulo;
     static JButton agregar;
     static JButton actulizar;
+    static JButton cargarAlRegistro;
     static JList listaSintomas;
     static JList listaSintomasFinal;
 
     ManejoArchivos archivos = new ManejoArchivos();
-
+    CargarSintomas cargar =  new CargarSintomas();
     public CargarRegistrosUI() {
 
 
@@ -58,6 +62,11 @@ public class CargarRegistrosUI extends JFrame{
         actulizar = new JButton("Actualizar");
         actulizar.setBounds(10, 10, 110, 30);
 
+
+        cargarAlRegistro = new JButton("Cargar");
+        cargarAlRegistro.setBounds(400, 360, 110, 30);
+
+
         listaSintomas = new JList(listaM);
         listaSintomas.setBounds(30, 100, 250, 250);
         listaSintomas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -68,6 +77,7 @@ public class CargarRegistrosUI extends JFrame{
         panel.add(actulizar);
         panel.add(listaSintomas);
         panel.add(agregar);
+        panel.add(cargarAlRegistro);
         panel.add(listaSintomasFinal);
         panel.add(titulo);
         panel.add(panelj);
@@ -102,6 +112,15 @@ public class CargarRegistrosUI extends JFrame{
                 listaM.removeElement(remplazo);
             }
             
+        });
+        
+        cargarAlRegistro.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                cargar.getSintomas();
+                System.out.println(cargar.getSintomas());
+            }
         });
 
         actulizar.addActionListener(new ActionListener() {

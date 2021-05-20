@@ -166,7 +166,6 @@ public class CargarSintomasUI extends JFrame  {
                 int l = value.length();
                 if (ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') {
                     peso.setEditable(true);
-
                     //
                 } else {
                     peso.setEditable(false);

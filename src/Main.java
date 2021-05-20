@@ -1,4 +1,5 @@
 import cargarregistros.CargarRegistrosUI;
+import cargarsintomas.CargarSintomas;
 import cargarsintomas.CargarSintomasUI;
 import monitor.Monitor;
 
@@ -7,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
-       CargarSintomasUI covid = new CargarSintomasUI();
+        CargarSintomasUI cov = new CargarSintomasUI();
         CargarRegistrosUI covi =  new CargarRegistrosUI();
 
         //   System.out.println("diagnostico");
