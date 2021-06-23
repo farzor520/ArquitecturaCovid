@@ -109,7 +109,7 @@ public class CargarRegistrosUI extends JFrame{
 
         /////IMPORTANTE Al cargar sintomas se carga dependiendo del texto de Sintomas y no del getsintomas() de CargarSintomas como deberia ser
        // archivos.cargarSintomas(listaM);
-        sintomas.forEach(sintoma -> listaM.addElement(sintoma));
+        sintomas.forEach(sintoma -> listaM.addElement(sintoma.toString()));
 
 
 
@@ -175,9 +175,9 @@ public class CargarRegistrosUI extends JFrame{
         actulizar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                listaM.removeAllElements();
-                listaF.removeAllElements();
-                archivos.cargarSintomas(listaM);
+               // listaM.removeAllElements();
+               // listaF.removeAllElements();
+               // archivos.cargarSintomas(listaM);
             }
         });
         detener();
