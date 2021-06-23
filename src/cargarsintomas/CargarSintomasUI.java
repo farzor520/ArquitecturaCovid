@@ -1,6 +1,9 @@
 package cargarsintomas;
 
-import manejoarchivos.ManejoArchivos;
+import cargarregistros.CargarRegistrosUI;
+import cargarsintomas.ManejoArchivosS;
+import monitor.CargarInfo;
+import monitor.Sintoma;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -10,31 +13,56 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Scanner;
+import java.util.Stack;
 
-public class CargarSintomasUI extends JFrame  {
+public class CargarSintomasUI extends JFrame{
 
 
-    // String peligro[] = {"Bajo", "Medio", "Critico", "Contables"};
     String[] peligro = new String[10];
     static DefaultListModel listaM = new DefaultListModel();
     static JPanel panelj;
     static JLabel titulo;
-    static JTextField nombre, peso;
+    static JLabel fase;
+    static JTextField nombre;
     static JComboBox sintomas;
     static JButton agregar;
     static JButton prueba;
     static JList listaSintomas;
+    String nombre1 = "toz";
+    String tipo1 = "PrimeraFase";
+    String direccion = "";
+    ArrayList<String> nombreA = new ArrayList<String>();
+    ArrayList<String> tipoA = new ArrayList<String>();
+    int apagado =0;
 
    // Monitor monitor = new Monitor();
-    ManejoArchivos archivos = new ManejoArchivos();
-    CargarSintomas cargar =  new CargarSintomas();
+    ManejoArchivosS archivos = new ManejoArchivosS();
+  //  CargarSintomasAyuda cargar =  new CargarSintomasAyuda();
 
 
-    public CargarSintomasUI() {
 
 
-        agregarSintomasFlexible();
+
+
+
+
+    public CargarSintomasUI() throws IOException {
+
+        //Agrega los sintomas de sintomas critico medio cuantitativo etc..
+      //  agregarSintomasFlexible();
+
+        direccion = archivos.getPath();
+        archivos.revizarExistenciaArchivo();
+        cargarLosSintomasTexto();
+        agragarFinal();
+
+
+        //Envia el cargarSintomas al Cargar Registro para usar el mismo get (PREGUNTAR)
+
 
         //**Crear el panel pricipal**
         JFrame panel = new JFrame();//instancia de jframe
@@ -53,13 +81,12 @@ public class CargarSintomasUI extends JFrame  {
         titulo.setBounds(220, 10, 230, 80);
         titulo.setFont(new Font("Arial", Font.BOLD, 20));
 
+        fase = new JLabel("Primera fase");
+        fase.setBounds(260, 30, 230, 80);
+        fase.setFont(new Font("Arial", Font.BOLD, 15));
+
         nombre = new JTextField();
         nombre.setBounds(20, 200, 120, 30);
-
-
-        peso = new JTextField(77);
-        peso.setBounds(150, 200, 120, 30);
-        peso.setVisible(false);
 
         sintomas = new JComboBox(peligro);
         sintomas.setBounds(20, 90, 100, 20);
@@ -68,7 +95,7 @@ public class CargarSintomasUI extends JFrame  {
         agregar = new JButton("AGREGAR");
         agregar.setBounds(20, 280, 90, 30);
 
-        prueba = new JButton("Probar");
+        prueba = new JButton("FINALIZAR");
         prueba.setBounds(200, 280, 90, 30);
 
         listaSintomas = new JList(listaM);
@@ -82,26 +109,54 @@ public class CargarSintomasUI extends JFrame  {
         panel.add(agregar);
         panel.add(sintomas);
         panel.add(nombre);
-        panel.add(peso);
+        panel.add(fase);
         panel.add(titulo);
         panel.add(panelj);
 
 
         //**Mostrar elementos**
-        panel.setLayout(null);//using no layout managers
-        panel.setVisible(true);//making the frame visible
+        panel.setLayout(null);
+        panel.setVisible(true);
 
-        //**Carga los sintomas en jList lista sintomas
+
+
+
+
+
+     //**Carga los sintomas en jList lista sintomas
+
+
+       /* if (archivos.pasaron3Dias()){
+            fase.setText("Segunda Fase");
+            archivos.cargarSintomas2da(listaM);
+        }
+        else {
+            archivos.cargarSintomas(listaM);
+        }
+        */
         archivos.cargarSintomas(listaM);
+
+
+
+
         //**Acciones de los botones**
 
         sintomas.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (sintomas.getSelectedItem().equals("Contables")) {
-                    peso.setVisible(true);
-                } else
-                    peso.setVisible(false);
+                }
+            }
+        });
+
+        prueba.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+             //   CargarRegistrosUI Registros = new CargarRegistrosUI();
+            // Registros.setCargarSintomas(cargar);
+                panel.setVisible(false);
+                seguir();
+
             }
         });
 
@@ -110,74 +165,56 @@ public class CargarSintomasUI extends JFrame  {
             public void actionPerformed(ActionEvent e) {
 
                 if (archivos.sintomasRepetidos(nombre.getText())) {
-                    if (!sintomas.getSelectedItem().equals(peligro[1])) {
                         if (!nombre.getText().equals("")) {
 
                             listaM.addElement(nombre.getText());
                             try {
-                                cargar.cargarSintomaX(nombre.getText(),sintomas.getSelectedItem().toString());
+                                nombreA.add(nombre.getText());
+                                tipoA.add(sintomas.getSelectedItem().toString());
+
+                                //nombre1 = nombre.getText();
+                                //tipo1 = sintomas.getSelectedItem().toString();
+                              //  cargar.cargarSintomaX(nombre.getText(),sintomas.getSelectedItem().toString());
+                                agragarFinal();
                             } catch (Exception exception) {
                                 exception.printStackTrace();
                             }
-                            //  CargarInfo.cargarNuevoMedio(nombre.getText());
-                            archivos.guardarArchivo(nombre.getText());
+                             //CargarInfo.cargarNuevoMedio(nombre.getText());
+                             //   archivos.guardarArchivo(nombre.getText());;
+                            archivos.guardarArchivo1(nombre.getText(),sintomas.getSelectedItem().toString());
                         }
-                    }
-
-                    if (sintomas.getSelectedItem().equals(peligro[1])) {
-                        if (!nombre.getText().equals("") && !peso.getText().equals("")) {
-
-                            listaM.addElement(nombre.getText());
-                            try {
-                                cargar.cargarSintomaX(nombre.getText(),sintomas.getSelectedItem().toString());
-                            } catch (Exception exception) {
-                                exception.printStackTrace();
-                            }
-                            //  CargarInfo.cargarNuevoContable(nombre.getText(), peso.getText());
-                            archivos.guardarArchivo(nombre.getText());
-                        }
-                    }
                 }
             }
 
         });
 
-        prueba.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+            detener();
 
-            }
+    }
 
-        });
+    private synchronized void detener(){
+        try {
 
+            this.wait();
 
-        listaSintomas.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
 
-                peso.setVisible(false);
+    }
 
-            }
-        });
-
-        peso.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent ke) {
-                String value = peso.getText();
-                int l = value.length();
-                if (ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') {
-                    peso.setEditable(true);
-                    //
-                } else {
-                    peso.setEditable(false);
-                    // peso.setText("");
-                }
-            }
-        });
+    private synchronized void seguir(){
+        try{
+            this.notify();
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
 
 
-    public void agregarSintomasFlexible() {
+    public void agregarSintomasFlexible(){
+
         File directoryPath = new File("out\\production\\MonitorCovid\\sintomas");
         File filesList[] = directoryPath.listFiles();
         int cont = 0;
@@ -186,8 +223,69 @@ public class CargarSintomasUI extends JFrame  {
             String nombreSintoma = nombre.replace(".class", "");
             peligro[cont] = nombreSintoma;
             cont++;
+
         }
     }
+
+    public void agragarFinal() throws IOException{
+        Stack<String> stack = new Stack<>();
+        Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources("sintomas");
+        while (urls.hasMoreElements()){
+            URL url = urls.nextElement();
+            File dir = new File(url.getFile());
+            int cont = 0;
+            for( File f : dir.listFiles()){
+                String nombreClases = f.getName().split("\\.")[0];
+                try{
+                    Class.forName("sintomas." + nombreClases).asSubclass(Sintoma.class);
+                    String x = (Class.forName("sintomas." + nombreClases).asSubclass(Sintoma.class)).toString().replace("sintomas.", "");
+                    peligro[cont] = x.replace("class ", "");
+                    cont++;
+                    stack.push(nombreClases);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+    }
+
+    public void cargarLosSintomasTexto(){
+
+        String nombre;
+        String tipo;
+
+        try {
+            FileInputStream fis = new FileInputStream(direccion);
+            Scanner sc = new Scanner(fis);
+            while (sc.hasNextLine()) {
+                String[] parts = sc.nextLine().split("-");
+                nombre = parts[0];
+                tipo = parts[1];
+                nombreA.add(nombre);
+                tipoA.add(tipo);
+               // cargar.cargarSintomaX(nombre,tipo);
+            }
+            sc.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ArrayList<String> sacarNombre(){
+
+        return nombreA;
+
+        //crear un array de string con su respectivo tipo para pasarlo a sintomas
+    }
+
+    public ArrayList<String> sacarTipo(){
+        return  tipoA;
+    }
+
 
 
 

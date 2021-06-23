@@ -1,9 +1,10 @@
 package monitor;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Stack;
 
-public class Registros implements Iterable<Registro> {
+public class Registros implements Iterable<Registro>, Serializable {
     private Stack<Registro> registros;
 
     public Registros() {

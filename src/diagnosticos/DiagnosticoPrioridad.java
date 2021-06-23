@@ -1,11 +1,9 @@
 package diagnosticos;
 
 import monitor.*;
-import sintomas.Contables;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class DiagnosticoPrioridad extends FuncionDiagnostico {
 

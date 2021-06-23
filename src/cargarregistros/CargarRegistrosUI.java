@@ -1,7 +1,6 @@
 package cargarregistros;
 
 import cargarsintomas.CargarSintomasUI;
-import manejoarchivos.ManejoArchivos;
 import cargarsintomas.CargarSintomas;
 import monitor.Monitor;
 import monitor.Sintomas;
@@ -12,6 +11,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Scanner;
@@ -22,17 +22,24 @@ public class CargarRegistrosUI extends JFrame{
     static DefaultListModel listaF = new DefaultListModel();
     static JPanel panelj;
     static JLabel titulo;
+    static JLabel fase;
     static JButton agregar;
     static JButton actulizar;
     static JButton cargarAlRegistro;
+    static JLabel fecha;
     static JList listaSintomas;
     static JList listaSintomasFinal;
 
-    ManejoArchivos archivos = new ManejoArchivos();
-    CargarSintomas cargar =  new CargarSintomas();
-    public CargarRegistrosUI() {
+    ManejoArchivosR archivos = new ManejoArchivosR();
+    CargarSintomas cargar;
+    Date data = new Date();
 
 
+
+    public CargarRegistrosUI(Sintomas sintomas) {
+
+
+        archivos.revizarExistenciaArchivo();
     //  agregarSintomasFlexible();
 
         //**Crear el panel pricipal**
@@ -51,6 +58,10 @@ public class CargarRegistrosUI extends JFrame{
         titulo = new JLabel("REGISTRO COVID");
         titulo.setBounds(220, 10, 230, 80);
         titulo.setFont(new Font("Arial", Font.BOLD, 20));
+
+        fase = new JLabel("Primera fase");
+        fase.setBounds(260, 30, 230, 80);
+        fase.setFont(new Font("Arial", Font.BOLD, 15));
 
         listaSintomasFinal = new JList(listaF);
         listaSintomasFinal.setBounds(350, 100, 250, 250);
@@ -72,13 +83,20 @@ public class CargarRegistrosUI extends JFrame{
         listaSintomas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 
-        //**Agregar elementos al panel**
+        String x =data.toString();
+        fecha = new JLabel("FECHA DE EVALUCION: " + x);
+        fecha.setBounds(30, 240, 320, 250);
 
-        panel.add(actulizar);
+
+
+        //**Agregar elementos al panel**
+        panel.add(fecha);
+       // panel.add(actulizar);
         panel.add(listaSintomas);
         panel.add(agregar);
         panel.add(cargarAlRegistro);
         panel.add(listaSintomasFinal);
+        panel.add(fase);
         panel.add(titulo);
         panel.add(panelj);
 
@@ -88,7 +106,23 @@ public class CargarRegistrosUI extends JFrame{
         panel.setVisible(true);//making the frame visible
 
         //**Carga los sintomas en jList lista sintomas
-        archivos.cargarSintomas(listaM);
+
+        /////IMPORTANTE Al cargar sintomas se carga dependiendo del texto de Sintomas y no del getsintomas() de CargarSintomas como deberia ser
+       // archivos.cargarSintomas(listaM);
+        sintomas.forEach(sintoma -> listaM.addElement(sintoma));
+
+
+
+        // listaM.addElement(cargar.getSintomas());
+
+
+     //   if (archivos.pasaron3Dias()){
+     //       fase.setText("Segunda Fase");
+    //        archivos.cargarSintomas2da(listaM);
+    //    }
+    //    else {
+     //       archivos.cargarSintomas(listaM);
+     //   }
 
         //**Acciones de los botones**
 
@@ -117,9 +151,24 @@ public class CargarRegistrosUI extends JFrame{
         cargarAlRegistro.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+               Date date = new Date();
+                //carga los sintomas de cargarUI
+               archivos.guardarRegistro("" + date + "\n");
+            //    cargar.getSintomas().forEach(sintoma -> {
+                sintomas.forEach(sintoma -> {
+                    if (listaF.contains(sintoma.toString())){
+                        //sintomas.add(sintoma);
+                        archivos.guardarRegistro(sintoma.toString()+ ": ");
+                        archivos.guardarRegistro(sintoma.peso()+"\n");
+                    }
+                });
 
-                cargar.getSintomas();
-                System.out.println(cargar.getSintomas());
+                //Manejo de  archivos
+                panel.setVisible(false);
+                seguir();
+
+
+
             }
         });
 
@@ -131,6 +180,26 @@ public class CargarRegistrosUI extends JFrame{
                 archivos.cargarSintomas(listaM);
             }
         });
+        detener();
 
+    }
+
+    private synchronized void detener(){
+        try {
+
+            this.wait();
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    private synchronized void seguir(){
+        try{
+            this.notify();
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 }

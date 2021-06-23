@@ -1,10 +1,8 @@
 package diagnosticos;
 
-import diagnosticos.DiagnosticoPrioridad;
 import monitor.*;
 import org.junit.jupiter.api.Test;
-import sintomas.Bajo;
-import sintomas.Critico;
+
 
 import java.util.Date;
 

@@ -1,10 +1,5 @@
 package monitor;
 
-import sintomas.Contables;
-import sintomas.Critico;
-import sintomas.Bajo;
-import sintomas.Medio;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
@@ -26,7 +21,7 @@ public class CargarInfo {
     }
 
 
-    public static Sintoma cargarNuevoMedio(String nombre) {
+  /*  public static Sintoma cargarNuevoMedio(String nombre) {
        Sintoma sintoma = new Medio(nombre);
        sintomas.add(sintoma);
        System.out.println(sintomas);
@@ -36,19 +31,23 @@ public class CargarInfo {
 
     public static Sintoma cargarNuevoContable(String nombreSin,String valor ) {
         int i =Integer.parseInt(valor);
-        Sintoma sintoma = new Contables(nombreSin,i);
+        Sintoma sintoma = new Contables(nombreSin);
         sintomas.add(sintoma);
         System.out.println(sintomas);
         cargarRegistros(sintoma);
         return sintoma;
     }
 
+   */
+
     private void cargarSintoma() {
+        /*
         perdidaDeOlfato = new Critico("Perdida de olfato");
-        temperaturaAlta = new Contables("Temperatura alta", 5);
+        temperaturaAlta = new Contables("Temperatura alta");
         tosSeca = new Medio("tos seca");
         dolorDeGarganta = new Bajo("dolor de garganta");
-        oximetro = new Contables("oximetro" , 10);
+        oximetro = new Contables("oximetro");
+         */
     }
 
     private void cargarSintomas() {
@@ -75,7 +74,7 @@ public class CargarInfo {
     }
 
     public static Registros cargarRegistros(Sintoma sin) {
-        //Sintomas sintomas = new Sintomas();
+        Sintomas sintomas = new Sintomas();
         sintomas.add(sin);
 
 

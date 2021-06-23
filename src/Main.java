@@ -3,23 +3,20 @@ import cargarsintomas.CargarSintomas;
 import cargarsintomas.CargarSintomasUI;
 import monitor.Monitor;
 
-import java.util.concurrent.TimeUnit;
+import java.io.IOException;
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
-        CargarSintomasUI cov = new CargarSintomasUI();
-        CargarRegistrosUI covi =  new CargarRegistrosUI();
+    public static void main(String[] args) throws IOException {
 
+     //   ManejoArchivos man = new ManejoArchivos();
+      // CargarRegistrosUI covi =  new CargarRegistrosUI();
+     //
         //   System.out.println("diagnostico");
        Monitor monitor = new Monitor();
-      //  monitor.monitorear();
-     //   System.out.println("resultado: " + monitor.getResultado());
-      //  TimeUnit.SECONDS.sleep(78);
-      //  Monitor monitor1 = new Monitor();
-      //  monitor.monitorear();
-      //  System.out.println("resultado: " + monitor.getResultado());
-      //  PruebaSet.prueba();
+       monitor.monitorear();
+        // System.out.println("resultado: " + monitor.getResultado());
+
     }
 
 }
