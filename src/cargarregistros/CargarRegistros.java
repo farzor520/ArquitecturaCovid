@@ -35,7 +35,7 @@ public class CargarRegistros {
         tosSeca = new Medio("Tos seca");
         */
         CargarRegistrosUI registro = new CargarRegistrosUI(sintomas);
-        sintomas.forEach(sintoma -> System.out.println(sintoma));
+        //sintomas.forEach(sintoma -> System.out.println(sintoma));
 
     }
 

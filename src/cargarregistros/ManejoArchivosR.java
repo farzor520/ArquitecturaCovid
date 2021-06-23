@@ -59,7 +59,7 @@ public class ManejoArchivosR extends CargarRegistros{
     public void cargarSintomas(DefaultListModel lista) {
 
         try {
-            FileInputStream fis = new FileInputStream(".\\sintomas.txt");
+            FileInputStream fis = new FileInputStream(getPath());
             Scanner sc = new Scanner(fis);
             while (sc.hasNextLine()) {
                 lista.addElement(sc.nextLine());
@@ -134,7 +134,7 @@ public class ManejoArchivosR extends CargarRegistros{
 
         int i = 0;
         try {
-            FileInputStream fis = new FileInputStream(".\\registros.txt");
+            FileInputStream fis = new FileInputStream(getPath());
             Scanner sc = new Scanner(fis);
             String res = sc.nextLine();
             if (res.contains("BOT")){
@@ -152,7 +152,7 @@ public class ManejoArchivosR extends CargarRegistros{
     public int diaFinal(){
         int i=0;
         try {
-            FileInputStream fis = new FileInputStream(".\\registros.txt");
+            FileInputStream fis = new FileInputStream(getPath());
             Scanner sc = new Scanner(fis);
             while (sc.hasNextLine()) {
                 String res = sc.nextLine();
@@ -197,8 +197,8 @@ public class ManejoArchivosR extends CargarRegistros{
     }
 
     public String getPath(){
-        String path1 = "cargarsintomas/sintomas.txt";
-        String path2 = "src/cargarsintomas/sintomas.txt";
+        String path1 = "cargarregistros/registros.txt";
+        String path2 = "src/cargarregistros/registros.txt";
         String res="";
         if(new File (path2).exists()){
             res += path2;
