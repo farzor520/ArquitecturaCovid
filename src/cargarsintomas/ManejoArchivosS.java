@@ -37,7 +37,7 @@ public class ManejoArchivosS {
 
 
       try {
-            FileWriter myWriter = new FileWriter(getPath());
+            FileWriter myWriter = new FileWriter(getPath(),true);
             myWriter.write("" + sintoma + "-" + tipo +"\n");
             myWriter.flush();
             myWriter.close();

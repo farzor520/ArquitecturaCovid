@@ -164,11 +164,10 @@ public class CargarRegistrosUI extends JFrame{
                 });
 
                 //Manejo de  archivos
+
                 panel.setVisible(false);
                 seguir();
-
-
-
+                System.exit(1);
             }
         });
 
@@ -180,8 +179,8 @@ public class CargarRegistrosUI extends JFrame{
                // archivos.cargarSintomas(listaM);
             }
         });
-        detener();
 
+        detener();
     }
 
     private synchronized void detener(){
