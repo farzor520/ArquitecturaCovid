@@ -2,36 +2,13 @@ package cargarsintomas;
 
 import javax.swing.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ManejoArchivosS {
 
     private final String nombrePaquete = "cargarsintomas";
-
-    public void guardarArchivo(String sintoma){
-        try {
-
-            FileWriter myWriter = new FileWriter(getPath());
-            myWriter.write("" + sintoma + "\n");
-            myWriter.flush();
-            myWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void guardarArchivo2dafase(String sintoma){
-        try {
-            FileWriter myWriter = new FileWriter(".\\sintomas2da.txt",true);
-            myWriter.write("" + sintoma + "\n");
-            myWriter.flush();
-            myWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void guardarArchivo1(String sintoma,String tipo){
 
@@ -45,99 +22,59 @@ public class ManejoArchivosS {
             e.printStackTrace();
         }
 
-
-
-     /*       File archivo = new File(getPath());
-
-            if(archivo.length()==0){
-                escribirSintomaCabecera(sintoma);
-            }else{
-                escribirSintoma(sintoma);
-            }
-
-      */
     }
 
     public void revizarExistenciaArchivo() {
 
             File file = new File(getPath());
 
-            //Create the file
             try {
                 if (file.createNewFile()) {
 
                 } else {
 
                 }
-                //Write Content
-               // FileWriter writer = new FileWriter(file);
 
-              //  writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
     }
 
-    public void escribirSintoma (String  s)
-    {
 
-        try
-        {
-            MiObjectOutputStream oos = new MiObjectOutputStream(
-                    new FileOutputStream(getPath()));
-            oos.writeObject(s);
-            oos.close();
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+    public void cargarSintomas(DefaultListModel<String> lista,DefaultListModel<String> listaS) {
 
-    }
-
-    public void escribirSintomaCabecera(String s){
-
-        try (ObjectOutputStream objectOutput = new ObjectOutputStream(
-                new FileOutputStream(getPath(), true))) {
-            objectOutput.writeObject(s);
-            objectOutput.reset();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void cargarSintomas(DefaultListModel lista) {
-
+        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> listS = new ArrayList<String>();
         try {
 
             FileInputStream fis = new FileInputStream(getPath());
             Scanner sc = new Scanner(fis);
             while (sc.hasNextLine()) {
-                lista.addElement(sc.nextLine());
+                String line = sc.nextLine();
+                if (line.contains("PrimeraFase")){
+                    list.add(line);
+                }else {
+                    listS.add(line);
+                }
             }
             sc.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Collections.sort(list);
+        Collections.sort(listS);
+        Ordenar(list,lista);
+        Ordenar(listS,listaS);
     }
 
-    public void cargarSintomas2da(DefaultListModel lista) {
+    private void Ordenar(ArrayList<String> list, DefaultListModel<String> lista) {
 
-        try {
-            FileInputStream fis = new FileInputStream(".\\sintomas2da.txt");
-            Scanner sc = new Scanner(fis);
-            while (sc.hasNextLine()) {
-                lista.addElement(sc.nextLine());
-            }
-            sc.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (int x = 0;x < list.size(); x++){
+            lista.addElement(list.get(x));
         }
-    }
 
+    }
 
     public boolean sintomasRepetidos(String nombre) {
 
@@ -156,70 +93,7 @@ public class ManejoArchivosS {
         return true;
     }
 
-    public void guardarRegistro(String registro){
-
-        try {
-            FileWriter myWriter = new FileWriter(".\\registros.txt",true);
-            myWriter.write("" + registro );
-            myWriter.flush();
-            myWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void agregarSintomasRefelct() throws ClassNotFoundException {
-        Class<?> classlldr = Class.forName("sintomas");
-        System.out.println("Name of Class  = " + classlldr.getName());
-    }
-
-    public boolean pasaron3Dias(){
-        if (unDia()+3 <= diaFinal()){
-            return true;
-        }
-        return false;
-    }
-
-    public int unDia(){
-
-        int i = 0;
-        try {
-            FileInputStream fis = new FileInputStream(getPath());
-            Scanner sc = new Scanner(fis);
-            String res = sc.nextLine();
-            if (res.contains("BOT")){
-                Matcher matcher = Pattern.compile("\\d+").matcher(res);
-                matcher.find();
-                i = Integer.valueOf(matcher.group());
-            }
-            sc.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return i;
-    }
-
-    public int diaFinal(){
-        int i=0;
-        try {
-            FileInputStream fis = new FileInputStream(getPath());
-            Scanner sc = new Scanner(fis);
-            while (sc.hasNextLine()) {
-                String res = sc.nextLine();
-                if (res.contains("BOT")){
-                    Matcher matcher = Pattern.compile("\\d+").matcher(res);
-                    matcher.find();
-                    i = Integer.valueOf(matcher.group());
-                }
-            }
-            sc.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return i;
-    }
-
-    public String getPath1(){
+    public String getPath(){
         File miDir = new File(".");
         String dir = "", path="", separador = System.getProperty("file.separator");
         try{
@@ -238,25 +112,11 @@ public class ManejoArchivosS {
         }
 
         if (!esDesarrollo){
-            path = dir+separador+nombrePaquete+separador;
+            path = "FavioGuerraSintomas.txt";
         } else {
             path = dir+separador+"src"+separador+nombrePaquete+separador+"sintomas.txt";
         }
-       // System.out.println(path);
         return path;
-    }
-
-    public String getPath(){
-        String path1 = "cargarsintomas/sintomas.txt";
-        String path2 = "src/cargarsintomas/sintomas.txt";
-        String res="";
-        if(new File (path2).exists()){
-            res += path2;
-        }else{
-            res+= path1;
-        }
-       // System.out.println(res);
-        return res;
     }
 
 }

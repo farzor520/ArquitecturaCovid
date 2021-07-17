@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public abstract class Sintoma implements Comparable<Sintoma>, Serializable {
+    public static final long serialVersionUID = 1771019375479215138l;
+
     private String nombre;
 
     public Sintoma(String n) {

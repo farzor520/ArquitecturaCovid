@@ -8,12 +8,9 @@ public class PrimeraFase extends Sintoma {
         super(n);
     }
 
-    // primeraFase
-
-
     @Override
     public int peso() {
-        return 5;
+        return 10;
     }
 
 }

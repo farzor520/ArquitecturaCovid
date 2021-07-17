@@ -1,52 +1,53 @@
 package cargarregistros;
 
-import java.io.IOException;
 import java.util.Date;
 
-import cargarsintomas.CargarSintomas;
-import cargarsintomas.CargarSintomasUI;
+import diagnosticos.DiagnosticoSimple;
 import monitor.Registro;
-import monitor.Sintoma;
+import monitor.Registros;
 import monitor.Sintomas;
-import sintomas.PrimeraFase;
+
 
 
 public class CargarRegistros {
 
     private Sintomas sintomas;
+    private Registros registros;
+    private DiagnosticoSimple diagnostico;
     private Date fecha;
     private CargarRegistrosUI registro;
+    private Registro registro1;
 
 
     public CargarRegistros(Sintomas sintomas) {
         this.sintomas = sintomas;
+        cargarRegistros();
     }
 
-    public CargarRegistros() {
-
+    public void cargarRegistros() {
+       // DatosRegistros datosRegistros = new DatosRegistros();
+        registros = new Registros();
     }
 
     private void cargarSintoma() {
-
-       /* perdidaDeOlfato = new Bajo("Perdida de olfato");
-        temperaturaAlta = new Critico("Temperatura alta");
-        tosSeca = new Medio("Tos seca");
-        */
-        registro = new CargarRegistrosUI(sintomas);
-        //sintomas.forEach(sintoma -> System.out.println(sintoma));
 
     }
 
     public Registro getRegistro() {
         cargarSintoma();
-        Registro x = new Registro(new Date(),sintomas);
-        return x;
+        Sintomas sintomasUsuario = new Sintomas();
+        registro = new CargarRegistrosUI(sintomas,sintomasUsuario,registros);
+        return new Registro(new Date(),sintomasUsuario);
+    }
+
+    public Registros getRegistros() {
+        Sintomas sintomasPaciente = new Sintomas();
+        registro = new CargarRegistrosUI(sintomas,sintomasPaciente,registros);
+        return registros;
     }
 
     public Date getFecha(){
         return fecha;
     }
-
-
 
 }

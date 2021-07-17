@@ -1,81 +1,61 @@
 package cargarsintomas;
 
-import cargarregistros.CargarRegistrosUI;
-import cargarsintomas.ManejoArchivosS;
-import monitor.CargarInfo;
 import monitor.Sintoma;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Scanner;
-import java.util.Stack;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class CargarSintomasUI extends JFrame{
 
 
-    String[] peligro = new String[10];
-    static DefaultListModel listaM = new DefaultListModel();
-    static JPanel panelj;
-    static JLabel titulo;
-    static JLabel fase;
-    static JTextField nombre;
-    static JComboBox sintomas;
-    static JButton agregar;
-    static JButton prueba;
-    static JList listaSintomas;
-    String nombre1 = "toz";
-    String tipo1 = "PrimeraFase";
-    String direccion = "";
-    ArrayList<String> nombreA = new ArrayList<String>();
-    ArrayList<String> tipoA = new ArrayList<String>();
-    int apagado =0;
-
-   // Monitor monitor = new Monitor();
-    ManejoArchivosS archivos = new ManejoArchivosS();
-  //  CargarSintomasAyuda cargar =  new CargarSintomasAyuda();
+    private String[] peligro = new String[2];
+    private static DefaultListModel<String> listaM = new DefaultListModel<String>();
+    private static DefaultListModel<String> listaS = new DefaultListModel<String>();
+    private static JPanel panelj;
+    private static JLabel titulo;
+    private static JLabel tipoSintomas;
+    private static JLabel sintomasAgregados;
+    private static JLabel agregarSintomaTexto;
+    private static JLabel fase;
+    private static JTextField nombre;
+    private static JComboBox sintomas;
+    private static JButton agregar;
+    private static JButton prueba;
+    private static JList listaSintomas;
+    private  static JList listaSintomasF;
 
 
-
-
-
-
+    private String direccion = "";
+    private ArrayList<String> nombreA = new ArrayList<String>();
+    private ArrayList<String> tipoA = new ArrayList<String>();
+    private ManejoArchivosS archivos = new ManejoArchivosS();
 
 
     public CargarSintomasUI() throws IOException {
 
-        //Agrega los sintomas de sintomas critico medio cuantitativo etc..
-      //  agregarSintomasFlexible();
 
         direccion = archivos.getPath();
         archivos.revizarExistenciaArchivo();
         cargarLosSintomasTexto();
-        agragarFinal();
 
+        agregarSintomas();
 
-        //Envia el cargarSintomas al Cargar Registro para usar el mismo get (PREGUNTAR)
-
-
-        //**Crear el panel pricipal**
-        JFrame panel = new JFrame();//instancia de jframe
+        JFrame panel = new JFrame();
         panel.setSize(650, 440);
         panel.setTitle("Sintomas");
 
-
-        //**Declaracion de elementos necesarios**
         panelj = new JPanel();
         Color colorCafe = new Color(4, 120, 239);
         panelj.setSize(650, 440);
         panelj.setBackground(colorCafe);
-
 
         titulo = new JLabel("MONITOREO COVID");
         titulo.setBounds(220, 10, 230, 80);
@@ -85,27 +65,57 @@ public class CargarSintomasUI extends JFrame{
         fase.setBounds(260, 30, 230, 80);
         fase.setFont(new Font("Arial", Font.BOLD, 15));
 
+        tipoSintomas = new JLabel("Tipo de sintomas");
+        tipoSintomas.setBounds(20, 60, 230, 80);
+        tipoSintomas.setFont(new Font("Arial", Font.BOLD, 14));
+
+        agregarSintomaTexto = new JLabel("Sintoma a agregar");
+        agregarSintomaTexto.setBounds(20, 148, 230, 80);
+        agregarSintomaTexto.setFont(new Font("Arial", Font.BOLD, 14));
+
+        sintomasAgregados = new JLabel("Sintomas Agregados");
+        sintomasAgregados.setBounds(400, 50, 230, 80);
+        sintomasAgregados.setFont(new Font("Arial", Font.BOLD, 15));
+
         nombre = new JTextField();
         nombre.setBounds(20, 200, 120, 30);
 
-        sintomas = new JComboBox(peligro);
-        sintomas.setBounds(20, 90, 100, 20);
+
+        sintomas = new JComboBox<String>(peligro);
+        sintomas.setBounds(20, 110, 130, 20);
 
 
         agregar = new JButton("AGREGAR");
         agregar.setBounds(20, 280, 90, 30);
 
         prueba = new JButton("FINALIZAR");
-        prueba.setBounds(200, 280, 90, 30);
+        prueba.setBounds(200, 280, 110, 30);
 
-        listaSintomas = new JList(listaM);
-        listaSintomas.setBounds(350, 100, 250, 250);
+
+        listaSintomas = new JList<String>(listaM);
         listaSintomas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+        listaSintomasF = new JList<String>(listaS);
+        listaSintomasF.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        //**Agregar elementos al panel**
+
+
+        JScrollPane scrollPane = new JScrollPane(listaSintomas);
+        scrollPane.setBounds(350, 100, 250, 250);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        JScrollPane scrollPane1 = new JScrollPane(listaSintomasF);
+        scrollPane1.setBounds(350, 100, 250, 250);
+        scrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane1.setVisible(false);
+
+
+        panel.add(scrollPane);
+        panel.add(scrollPane1);
+        panel.add(sintomasAgregados);
+        panel.add(tipoSintomas);
+        panel.add(agregarSintomaTexto);
         panel.add(prueba);
-        panel.add(listaSintomas);
         panel.add(agregar);
         panel.add(sintomas);
         panel.add(nombre);
@@ -113,83 +123,52 @@ public class CargarSintomasUI extends JFrame{
         panel.add(titulo);
         panel.add(panelj);
 
-
-        //**Mostrar elementos**
         panel.setLayout(null);
         panel.setVisible(true);
 
+        archivos.cargarSintomas(listaM,listaS);
 
-
-
-
-
-     //**Carga los sintomas en jList lista sintomas
-
-
-       /* if (archivos.pasaron3Dias()){
-            fase.setText("Segunda Fase");
-            archivos.cargarSintomas2da(listaM);
-        }
-        else {
-            archivos.cargarSintomas(listaM);
-        }
-        */
-        archivos.cargarSintomas(listaM);
-
-
-
-
-        //**Acciones de los botones**
-
-        sintomas.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (sintomas.getSelectedItem().equals("Contables")) {
-                }
-            }
-        });
-
-        prueba.addActionListener(new ActionListener() {
+     prueba.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-             //   CargarRegistrosUI Registros = new CargarRegistrosUI();
-            // Registros.setCargarSintomas(cargar);
-                panel.setVisible(false);
-                seguir();
+                exit(panel);
 
             }
-        });
+     });
 
-        agregar.addActionListener(new ActionListener() {
+     sintomas.addItemListener(new ItemListener() {
+         @Override
+         public void itemStateChanged(ItemEvent e) {
+             if (sintomas.getSelectedItem().equals("SegundaFase")){
+                 scrollPane.setVisible(false);
+                 scrollPane1.setVisible(true);
+                 fase.setText("Segunda Fase");
+             } else {
+                 scrollPane1.setVisible(false);
+                 scrollPane.setVisible(true);
+                 fase.setText("Primera Fase");
+             }
+         }
+     });
+
+        agregar.addActionListener(new AgregarListener(listaS,nombre,sintomas,nombreA,tipoA,listaM){});
+
+
+        panel.addWindowListener(new WindowAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-
-                if (archivos.sintomasRepetidos(nombre.getText())) {
-                        if (!nombre.getText().equals("")) {
-
-                            listaM.addElement(nombre.getText());
-                            try {
-                                nombreA.add(nombre.getText());
-                                tipoA.add(sintomas.getSelectedItem().toString());
-
-                                //nombre1 = nombre.getText();
-                                //tipo1 = sintomas.getSelectedItem().toString();
-                              //  cargar.cargarSintomaX(nombre.getText(),sintomas.getSelectedItem().toString());
-                                agragarFinal();
-                            } catch (Exception exception) {
-                                exception.printStackTrace();
-                            }
-                             //CargarInfo.cargarNuevoMedio(nombre.getText());
-                             //   archivos.guardarArchivo(nombre.getText());;
-                            archivos.guardarArchivo1(nombre.getText(),sintomas.getSelectedItem().toString());
-                        }
-                }
+            public void windowClosing(WindowEvent e) {
+                exit(panel);
             }
-
         });
 
             detener();
 
+    }
+
+    private void agregarSintomas() throws IOException {
+        if(esDesarrollo()){
+            agregarFinal();
+        } else jar();
     }
 
     private synchronized void detener(){
@@ -211,23 +190,7 @@ public class CargarSintomasUI extends JFrame{
         }
     }
 
-
-
-    public void agregarSintomasFlexible(){
-
-        File directoryPath = new File("out\\production\\MonitorCovid\\sintomas");
-        File filesList[] = directoryPath.listFiles();
-        int cont = 0;
-        for (File file : filesList) {
-            String nombre = file.getName();
-            String nombreSintoma = nombre.replace(".class", "");
-            peligro[cont] = nombreSintoma;
-            cont++;
-
-        }
-    }
-
-    public void agragarFinal() throws IOException{
+    private void agregarFinal() throws IOException{
         Stack<String> stack = new Stack<>();
         Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources("sintomas");
         while (urls.hasMoreElements()){
@@ -247,11 +210,51 @@ public class CargarSintomasUI extends JFrame{
                 }
             }
         }
-
-
     }
 
-    public void cargarLosSintomasTexto(){
+    private void jar() throws IOException{
+        int cont = 0;
+        Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources("sintomas");
+            try {
+                ZipInputStream zip = new ZipInputStream(new FileInputStream("home.jar"));
+                for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()){
+                    if(!entry.isDirectory() && entry.getName().endsWith(".class")) {
+                        String className = entry.getName().replace('/','.');
+                        if (className.split("\\.")[0].equals("sintomas")){
+                            this.peligro[cont] = className.split("\\.")[1];
+                            cont++;
+                        }
+                    }
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+    }
+
+    private boolean esDesarrollo(){
+        File miDir = new File(".");
+        String dir = "", path="", separador = System.getProperty("file.separator");
+        try{
+            dir = miDir.getCanonicalPath();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        boolean desarrollo = false;
+        File file2 = new File(dir);
+        String[] a = file2.list();
+        for(int i=0;i<a.length;i++){
+            if (a[i].equals("src")){
+                desarrollo=true;
+            }
+        }
+
+        return desarrollo;
+    }
+
+
+    private void cargarLosSintomasTexto(){
 
         String nombre;
         String tipo;
@@ -265,7 +268,6 @@ public class CargarSintomasUI extends JFrame{
                 tipo = parts[1];
                 nombreA.add(nombre);
                 tipoA.add(tipo);
-               // cargar.cargarSintomaX(nombre,tipo);
             }
             sc.close();
         } catch (IOException e) {
@@ -275,18 +277,21 @@ public class CargarSintomasUI extends JFrame{
         }
     }
 
+    private void exit(JFrame panel){
+
+        synchronized (this) {
+            this.notify();
+        }
+        panel.setVisible(false);
+        panel.dispose();
+    }
+
     public ArrayList<String> sacarNombre(){
-
         return nombreA;
-
-        //crear un array de string con su respectivo tipo para pasarlo a sintomas
     }
 
     public ArrayList<String> sacarTipo(){
         return  tipoA;
     }
-
-
-
 
 }

@@ -34,7 +34,7 @@ public class DiagnosticoSimple extends FuncionDiagnostico {
         }catch (NullPointerException ex){
 
         }
-        System.out.println(pesoSintomas);
+
         return pesoSintomas;
     }
 

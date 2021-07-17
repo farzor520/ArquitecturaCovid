@@ -1,109 +1,77 @@
 package cargarregistros;
 
+import monitor.Registro;
+import monitor.Registros;
+import monitor.Sintoma;
 import monitor.Sintomas;
+import sintomas.PrimeraFase;
+import sintomas.SegundaFase;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class ManejoArchivosR extends CargarRegistros{
+public class ManejoArchivosR{
 
-    private Sintomas sintomas;
+
     private final String nombrePaquete = "cargarregistros";
+    private Sintomas todosS = new Sintomas();
+    private PrimeraFase primera;
+    private SegundaFase segunda;
+    private Date dia;
 
-    public ManejoArchivosR(Sintomas sintomas) {
-        super(sintomas);
-    }
 
-    public ManejoArchivosR() {
-        super();
-    }
 
-    public void guardarArchivo(String sintoma){
-        try {
-            FileWriter myWriter = new FileWriter(".\\sintomas.txt",true);
-            myWriter.write("" + sintoma + "\n");
-            myWriter.flush();
-            myWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void guardarArchivo2dafase(String sintoma){
-        try {
-            FileWriter myWriter = new FileWriter(".\\sintomas2da.txt",true);
-            myWriter.write("" + sintoma + "\n");
-            myWriter.flush();
-            myWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public void guardarArchivo1(String sintoma,String tipo){
-        try {
-            FileWriter myWriter = new FileWriter(".\\sintomas1.txt",true);
-            myWriter.write("" + sintoma + "-" + tipo +"\n");
-            myWriter.flush();
-            myWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    public void registroTexto(DefaultListModel<String> lista, Registros registros) {
 
-    public void cargarSintomas(DefaultListModel lista) {
+        int primeraFecha = 0;
 
         try {
             FileInputStream fis = new FileInputStream(getPath());
             Scanner sc = new Scanner(fis);
             while (sc.hasNextLine()) {
-                lista.addElement(sc.nextLine());
-            }
-            sc.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void cargarSintomasGet() {
-        sintomas.forEach(sintoma -> System.out.println(sintoma));
-    }
-
-    public void cargarSintomas2da(DefaultListModel lista) {
-
-        try {
-            FileInputStream fis = new FileInputStream(".\\sintomas2da.txt");
-            Scanner sc = new Scanner(fis);
-            while (sc.hasNextLine()) {
-                lista.addElement(sc.nextLine());
-            }
-            sc.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public boolean sintomasRepetidos(String nombre) {
-
-        try {
-            FileInputStream fis = new FileInputStream(".\\sintomas.txt");
-            Scanner sc = new Scanner(fis);
-            while (sc.hasNextLine()) {
-                if (nombre.equals(sc.nextLine())) {
-                    return false;
+                String dato = "";
+                dato = sc.nextLine();
+                lista.addElement(dato);
+                if (esFecha(dato)){
+                    if (primeraFecha > 0){
+                        Registro reg = new Registro(dia,todosS);
+                            registros.push(reg);
+                        todosS = new Sintomas();
+                    }
+                    dia = new SimpleDateFormat("yyyy-MM-dd").parse(dato);
+                    primeraFecha++;
+                }else {
+                    if (dato.contains("10")){
+                        primera = new PrimeraFase(dato);
+                        todosS.add(primera);
+                    }else if (dato.contains("100")){
+                        segunda = new SegundaFase(dato);
+                        todosS.add(segunda);
+                    }
                 }
             }
+            Registro reg = new Registro(dia,todosS);
+            registros.push(reg);
             sc.close();
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-        return true;
+    }
+
+    private boolean esFecha(String nextLine){
+
+        if (nextLine.contains("-")){
+            return true;
+        }
+        return false;
     }
 
     public void guardarRegistro(String registro){
@@ -118,58 +86,7 @@ public class ManejoArchivosR extends CargarRegistros{
         }
     }
 
-    public void agregarSintomasRefelct() throws ClassNotFoundException {
-        Class<?> classlldr = Class.forName("sintomas");
-        System.out.println("Name of Class  = " + classlldr.getName());
-    }
-
-    public boolean pasaron3Dias(){
-        if (unDia()+3 <= diaFinal()){
-            return true;
-        }
-        return false;
-    }
-
-    public int unDia(){
-
-        int i = 0;
-        try {
-            FileInputStream fis = new FileInputStream(getPath());
-            Scanner sc = new Scanner(fis);
-            String res = sc.nextLine();
-            if (res.contains("BOT")){
-                Matcher matcher = Pattern.compile("\\d+").matcher(res);
-                matcher.find();
-                i = Integer.valueOf(matcher.group());
-            }
-            sc.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return i;
-    }
-
-    public int diaFinal(){
-        int i=0;
-        try {
-            FileInputStream fis = new FileInputStream(getPath());
-            Scanner sc = new Scanner(fis);
-            while (sc.hasNextLine()) {
-                String res = sc.nextLine();
-                if (res.contains("BOT")){
-                    Matcher matcher = Pattern.compile("\\d+").matcher(res);
-                    matcher.find();
-                    i = Integer.valueOf(matcher.group());
-                }
-            }
-            sc.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return i;
-    }
-
-    public String getPath1(){
+    public String getPath(){
         File miDir = new File(".");
         String dir = "", path="", separador = System.getProperty("file.separator");
         try{
@@ -188,46 +105,77 @@ public class ManejoArchivosR extends CargarRegistros{
         }
 
         if (!esDesarrollo){
-            path = dir+separador+nombrePaquete+separador;
+            path = "FavioGuerraRegistros.txt";
         } else {
             path = dir+separador+"src"+separador+nombrePaquete+separador+"registros.txt";
         }
-        // System.out.println(path);
         return path;
     }
-
-    public String getPath(){
-        String path1 = "cargarregistros/registros.txt";
-        String path2 = "src/cargarregistros/registros.txt";
-        String res="";
-        if(new File (path2).exists()){
-            res += path2;
-        }else{
-            res+= path1;
-        }
-       // System.out.println(res);
-        return res;
-    }
-
 
     public void revizarExistenciaArchivo() {
 
         File file = new File(getPath());
-
-        //Create the file
         try {
             if (file.createNewFile()) {
 
             } else {
 
             }
-            //Write Content
-            // FileWriter writer = new FileWriter(file);
-
-            //  writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
+
+    public int manejoDeDias(DefaultListModel<String> lista)   {
+
+        String str = "";
+        int numberAnterior = -1;
+        int numberActual = -1;
+        int dias = -1;
+        int mitad = 10;
+        try {
+            FileInputStream fis = new FileInputStream(getPath());
+            Scanner sc = new Scanner(fis);
+            while (sc.hasNextLine()) {
+                str = sc.nextLine();
+                str = str.replaceAll("[^\\d]", " ");
+                str = str.trim();
+                str = str.replaceAll(" +", " ");
+                if (str.equals("")){
+                    str = "-1";
+                }
+                if (str.length()<2){
+                    mitad++;
+                }
+                if (str.length()>=2){
+                    if (mitad >= lista.getSize()/4) {
+                        mitad = 0;
+                        str = str.substring(0, 2);
+                        try {
+                            numberActual = Integer.parseInt(str);
+                            if (numberAnterior == -1) {
+                                numberAnterior = numberActual;
+                                dias = 1;
+                            } else if (numberAnterior + 1 == numberActual) {
+                                numberAnterior = numberActual;
+                                dias++;
+                            } else if (numberAnterior + 1 != numberActual) {
+                                numberAnterior = numberActual;
+                                dias = 1;
+                            }
+                        } catch (NumberFormatException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+            sc.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return dias;
+    }
+
+
 }
