@@ -2,16 +2,13 @@ package cargarsintomas;
 
 import javax.swing.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
 
 public class ManejoArchivosS {
 
     private final String nombrePaquete = "cargarsintomas";
 
     public void guardarArchivo1(String sintoma,String tipo){
-
 
       try {
             FileWriter myWriter = new FileWriter(getPath(),true);
@@ -22,6 +19,35 @@ public class ManejoArchivosS {
             e.printStackTrace();
         }
 
+    }
+
+    public void agregarSintomas(String[] peligro) throws IOException {
+        AgregarSintomasFlexible flex = new AgregarSintomasFlexible();
+        if(esDesarrollo() || esClass()){
+            flex.agregarFinal(peligro);
+        } else flex.jar(peligro);
+    }
+
+    private boolean esClass() {
+        File miDir = new File(".");
+        String dir = "", path="", separador = System.getProperty("file.separator");
+        try{
+            dir = miDir.getCanonicalPath();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        boolean clase = false;
+        File file2 = new File(dir);
+        String[] a = file2.list();
+        for(int i = 0; i< Objects.requireNonNull(a).length; i++){
+            if (a[i].equals("Main.class")) {
+                clase = true;
+                break;
+            }
+        }
+
+        return clase;
     }
 
     public void revizarExistenciaArchivo() {
@@ -44,8 +70,8 @@ public class ManejoArchivosS {
 
     public void cargarSintomas(DefaultListModel<String> lista,DefaultListModel<String> listaS) {
 
-        ArrayList<String> list = new ArrayList<String>();
-        ArrayList<String> listS = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
+        ArrayList<String> listS = new ArrayList<>();
         try {
 
             FileInputStream fis = new FileInputStream(getPath());
@@ -70,8 +96,8 @@ public class ManejoArchivosS {
 
     private void Ordenar(ArrayList<String> list, DefaultListModel<String> lista) {
 
-        for (int x = 0;x < list.size(); x++){
-            lista.addElement(list.get(x));
+        for (String s : list) {
+            lista.addElement(s);
         }
 
     }
@@ -102,21 +128,59 @@ public class ManejoArchivosS {
         catch (Exception e){
             e.printStackTrace();
         }
-        boolean esDesarrollo = false;
-        File file2 = new File(dir);
-        String[] a = file2.list();
-        for(int i=0;i<a.length;i++){
-            if (a[i].equals("src")){
-                esDesarrollo=true;
-            }
-        }
-
-        if (!esDesarrollo){
-            path = "FavioGuerraSintomas.txt";
-        } else {
+        if (esClass()){
+            path = "cargarSintomas/Sintomas.txt";
+        } else { if (esDesarrollo()){
             path = dir+separador+"src"+separador+nombrePaquete+separador+"sintomas.txt";
+        } else {
+            path = "FavioGuerraSintomas.txt"  ;
+        }
         }
         return path;
     }
+
+    public boolean esDesarrollo(){
+        File miDir = new File(".");
+        String dir = "", path="", separador = System.getProperty("file.separator");
+        try{
+            dir = miDir.getCanonicalPath();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        boolean desarrollo = false;
+        File file2 = new File(dir);
+        String[] a = file2.list();
+        for(int i = 0; i< Objects.requireNonNull(a).length; i++){
+            if (a[i].equals("src")) {
+                desarrollo = true;
+                break;
+            }
+        }
+
+        return desarrollo;
+    }
+
+    public void cargarLosSintomasTexto(String direccion, List<String> nombreA, List<String> tipoA){
+
+        String nombre;
+        String tipo;
+
+        try {
+            FileInputStream fis = new FileInputStream(direccion);
+            Scanner sc = new Scanner(fis);
+            while (sc.hasNextLine()) {
+                String[] parts = sc.nextLine().split("-");
+                nombre = parts[0];
+                tipo = parts[1];
+                nombreA.add(nombre);
+                tipoA.add(tipo);
+            }
+            sc.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

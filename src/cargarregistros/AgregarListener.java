@@ -8,8 +8,8 @@ public class AgregarListener implements ActionListener {
 
 
     private JList listaSintomas;
-    static DefaultListModel<String> listaM;
-    static DefaultListModel<String> listaF;
+    private DefaultListModel<String> listaM;
+    private DefaultListModel<String> listaF;
 
     public AgregarListener(JList listaSintomas,DefaultListModel<String> listaM, DefaultListModel<String> listaF){
         this.listaSintomas = listaSintomas;

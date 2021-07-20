@@ -7,12 +7,10 @@ import java.util.*;
 
 public class DiagnosticoPorFase extends FuncionDiagnostico {
 
-    private Map<Sintoma,String> sintomasDeUnaFase;
-    private Map<String,Integer> nroSintomasDeCadaFase;
-    int cantSintomasF1;
-    int cantSintomasF2;
-    String fechaAnterior = "";
-    int controlFecha = 0;
+    private int cantSintomasF1;
+    private int cantSintomasF2;
+    private String fechaAnterior = "";
+    private int controlFecha = 0;
 
     public DiagnosticoPorFase(Sintomas ls) {
         super(ls);
@@ -40,7 +38,7 @@ public class DiagnosticoPorFase extends FuncionDiagnostico {
             if (r.getFecha()!=null){
 
            String fechaString= format.format (r.getFecha());
-            for (Sintoma s: r.getSintomas()){
+            for (Sintoma ignored : r.getSintomas()){
                 tam++;
             }
 
@@ -93,10 +91,10 @@ public class DiagnosticoPorFase extends FuncionDiagnostico {
     }
 
     private boolean calcularFecha( String fechaString,String fechaAnterior) {
-        int numberActual = 0;
+        int numberActual;
         int numberAnterior = 0;
         String p = fechaString.substring(fechaString.length()-2);
-        String a = "";
+        String a;
         if (controlFecha != 0) {
             a = fechaAnterior.substring(fechaAnterior.length() - 2);
             numberAnterior = Integer.parseInt(a);
@@ -114,14 +112,9 @@ public class DiagnosticoPorFase extends FuncionDiagnostico {
         return false;
     }
 
-    private String dateToString(Date date){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        return format.format(date);
-    }
-
     private void cargarFaseSintomasMonitor(Sintomas ls) {
-        sintomasDeUnaFase = new HashMap<>();
-        nroSintomasDeCadaFase = new HashMap<>();
+        Map<Sintoma, String> sintomasDeUnaFase = new HashMap<>();
+        Map<String, Integer> nroSintomasDeCadaFase = new HashMap<>();
         nroSintomasDeCadaFase.put("PrimeraFase",0);
         nroSintomasDeCadaFase.put("SegundaFase",0);
 

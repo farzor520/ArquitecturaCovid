@@ -3,38 +3,31 @@ package cargarsintomas;
 import monitor.Sintoma;
 import monitor.Sintomas;
 
-import java.io.IOException;
-import java.lang.*;
+import java.awt.*;
+import java.util.List;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
+
 
 public class CargarSintomas {
 
 
     private Sintomas sintomas;
-    private CargarSintomasUI carga;
-    ArrayList<String> nombreArray = new ArrayList<String>();
-    ArrayList<String> tipoArray = new ArrayList<String>();
+    private List nombreArray;
+    private List tipoArray;
+    private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     public CargarSintomas() {
 
-        cargarSintoma();
         cargarSintomas();
         try {
-            carga = new CargarSintomasUI();
-            cargarSintomasArray();
+            CargarSintomasUI carga = new CargarSintomasUI(screenSize);
             nombreArray = carga.sacarNombre();
             tipoArray = carga.sacarTipo();
             cargarSintomasArray();
 
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    void cargarSintoma() {
     }
 
     private void cargarSintomas() {
@@ -42,14 +35,12 @@ public class CargarSintomas {
     }
 
     private void cargarSintomasArray() throws Exception {
-
         for (int i = nombreArray.size();i > 0;i--){
-            cargarSintomaX(nombreArray.get(i-1),tipoArray.get(i-1));
+            cargarSintomaX(nombreArray.get(i-1).toString(),tipoArray.get(i-1).toString());
         }
-
     }
 
-   public void cargarSintomaX(String nombre,String tipo) throws Exception{
+    private void cargarSintomaX(String nombre,String tipo) throws Exception{
        try {
            Constructor c = Class.forName("sintomas." + tipo).getConstructor(String.class);
            Sintoma tipos = (Sintoma) c.newInstance(nombre);
@@ -58,14 +49,11 @@ public class CargarSintomas {
           System.out.println(ex.toString());
        }
    }
-
-
-    void cargarSintomas(Sintoma x) {
+    private void cargarSintomas(Sintoma x) {
         sintomas.add(x);
     }
 
     public Sintomas getSintomas() {
         return sintomas;
     }
-
 }

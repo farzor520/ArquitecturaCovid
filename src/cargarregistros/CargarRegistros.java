@@ -24,8 +24,7 @@ public class CargarRegistros {
         cargarRegistros();
     }
 
-    public void cargarRegistros() {
-       // DatosRegistros datosRegistros = new DatosRegistros();
+    private void cargarRegistros() {
         registros = new Registros();
     }
 
@@ -36,13 +35,12 @@ public class CargarRegistros {
     public Registro getRegistro() {
         cargarSintoma();
         Sintomas sintomasUsuario = new Sintomas();
-        registro = new CargarRegistrosUI(sintomas,sintomasUsuario,registros);
+        registro = new CargarRegistrosUI(sintomas, registros);
         return new Registro(new Date(),sintomasUsuario);
     }
 
     public Registros getRegistros() {
-        Sintomas sintomasPaciente = new Sintomas();
-        registro = new CargarRegistrosUI(sintomas,sintomasPaciente,registros);
+        registro = new CargarRegistrosUI(sintomas, registros);
         return registros;
     }
 
